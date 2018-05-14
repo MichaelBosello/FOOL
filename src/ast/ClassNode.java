@@ -49,13 +49,13 @@ public class ClassNode implements DecNode {
 	  ClassTypeNode type = (ClassTypeNode) symType;
 	  if(superEntry != null) {
 		  ClassTypeNode superType = (ClassTypeNode) superEntry.getType();
-		  for(int i = 0; i < type.getFields().size(); i++) {
+		  for(int i = 0; i < superType.getFields().size(); i++) {
 			  if(!FOOLlib.isSubtype(superType.getFields().get(i), type.getFields().get(i))) {
 				  System.out.println("Incompatible value in override");
 				  System.exit(0);
 			  }
 		  }
-		  for(int i = 0; i < type.getMethods().size(); i++) {
+		  for(int i = 0; i < superType.getMethods().size(); i++) {
 			  if(!FOOLlib.isSubtype(superType.getMethods().get(i), type.getMethods().get(i))) {
 				  System.out.println("Incompatible method override");
 				  System.exit(0);
@@ -69,7 +69,7 @@ public class ClassNode implements DecNode {
   public String codeGeneration() {
 	  ArrayList<String> dispatchTable = new ArrayList<>();
 	  if(superEntry != null) {
-		  dispatchTable = new ArrayList<>(FOOLlib.getDispatchTables().get(-superEntry.getOffset() - 2));
+		  dispatchTable = new ArrayList<>(FOOLlib.getDispatchTables().get((-superEntry.getOffset()) - 2));
 	  }
 	  FOOLlib.addDispatchTable(dispatchTable);
 	  for(int i = 0; i < methods.size(); i++) {

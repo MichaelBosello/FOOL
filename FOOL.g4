@@ -28,21 +28,21 @@ int lexicalErrors=0;
 prog returns [Node ast]
 	: {HashMap<String,STentry> hm = new HashMap<String,STentry> ();
        symTable.add(hm);}          
-	  (   e=exp 	
+	  (   e=exp 
           {$ast = new ProgNode($e.ast);} 
 	      | LET 
 	      {ProgLetInNode prog = new ProgLetInNode(); $ast=prog;}
-	      ( c=cllist {prog.addClass($c.ast);}(d=declist {prog.addDec($d.astlist);})?
+	      ( c=cllist {prog.addClass($c.astlist);}(d=declist {prog.addDec($d.astlist);})?
 	        | d=declist {prog.addDec($d.astlist);}
 	      ) IN e=exp {prog.addExp($e.ast);}      
 	  ) 
 	  {symTable.remove(nestingLevel);}
       SEMIC ;
 
-cllist returns [DecNode ast]
-  : ( CLASS c=ID {
+cllist returns [ArrayList<DecNode> astlist]
+  : {$astlist= new ArrayList<DecNode>() ;}   
+  	    ( CLASS c=ID {
   					ClassNode cl = new ClassNode($c.text);
-  					$ast=cl;
   					ClassTypeNode ctype = new ClassTypeNode();
   					cl.setSymType(ctype);
   					HashMap<String,STentry> virtualTable = new HashMap<String,STentry> ();
@@ -54,7 +54,6 @@ cllist returns [DecNode ast]
 	           {System.out.println("Class "+$p.text+" at line "+$p.line+" not declared");
 	            System.exit(0);} 
   			   cl = new ClassNode($c.text,$p.text,superEntry);
-  			   $ast=cl;
   			   ctype = new ClassTypeNode(superEntry.getType());
   			   cl.setSymType(ctype);
   			   HashMap<String,STentry> parentVirtualTable = classTable.get($p.text);
@@ -67,6 +66,7 @@ cllist returns [DecNode ast]
   			   FOOLlib.mapSuperType($c.text, $p.text);
   		})? 
   		{
+  			$astlist.add(cl); 
   			HashMap<String,STentry> hm = symTable.get(nestingLevel);
 			if ( hm.put($c.text,new STentry(nestingLevel,ctype,globalOffset--)) != null  )
 				{System.out.println("Class id "+$c.text+" at line "+$c.line+" already declared");
@@ -88,7 +88,7 @@ cllist returns [DecNode ast]
                   {
                   	fieldOffset++;
                   	virtualTable.get($pid.text).addType($pt.ast);
-                  } 
+                  } else
                   ctype.addField($pt.ast, (-virtualTable.get($pid.text).getOffset()) - 1);
                 }
   		   	(COMMA pid=ID COLON pt=type
@@ -99,7 +99,7 @@ cllist returns [DecNode ast]
                   {
                   	fieldOffset++;
                   	virtualTable.get($pid.text).addType($pt.ast);
-                  }
+                  } else
                   ctype.addField($pt.ast, (-virtualTable.get($pid.text).getOffset()) - 1);
                   
                 }
@@ -117,9 +117,10 @@ cllist returns [DecNode ast]
 	               {
 	               	 methodOffset--;
                   	 virtualTable.get($i.text).addType($t.ast);
-                   }
+                  	 f.setOffset(virtualTable.get($i.text).getOffset());
+                   } else {
                    f.setOffset(virtualTable.get($i.text).getOffset());
-                   ctype.addMethod($t.ast, virtualTable.get($i.text).getOffset());
+                   ctype.addMethod($t.ast, virtualTable.get($i.text).getOffset());}
 	                //creare una nuova hashmap per la symTable
 	                nestingLevel++;
 	                HashMap<String,STentry> hmn = new HashMap<String,STentry> ();

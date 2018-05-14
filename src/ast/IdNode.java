@@ -23,6 +23,10 @@ public class IdNode implements Node {
 	  System.out.println("Wrong usage of function identifier");
 	  System.exit(0);
 	}*/ 
+	  if (entry.isMethod()) {
+		  System.out.println("Wrong usage of method identifier");
+		  System.exit(0);
+	  }
 	  if (entry.getType() instanceof ClassTypeNode) {
 		  System.out.println("Wrong usage of function identifier");
 		  System.exit(0);

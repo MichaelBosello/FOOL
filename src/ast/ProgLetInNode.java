@@ -5,14 +5,14 @@ import lib.*;
 public class ProgLetInNode implements Node {
 
   private ArrayList<DecNode> declist;
+  private ArrayList<DecNode> classNode = new ArrayList<DecNode>();
   private Node exp;
-  private Node classNode;
   
   public void addDec(ArrayList<DecNode> d) {
 	  declist=d; 
   }
   
-  public void addClass(DecNode c) {
+  public void addClass(ArrayList<DecNode> c) {
 	  classNode=c; 
   }
   
@@ -24,28 +24,24 @@ public class ProgLetInNode implements Node {
 	 String declstr="";
 	 for (Node dec:declist){declstr+=dec.toPrint(s+"  ");};
 	 String classPrint = "";
-	 if(classNode != null)
-		 classPrint = classNode.toPrint(s+"  ");
+	 for (Node cl:classNode){classPrint+=cl.toPrint(s+"  ");};
      return s+"ProgLetIn\n" + classPrint + declstr + exp.toPrint(s+"  "); 
   }
 
   public Node typeCheck() {
     for (Node dec:declist){dec.typeCheck();};
-    if(classNode != null)
-    	classNode.typeCheck();
+    for (Node cl:classNode){cl.typeCheck();};
     return exp.typeCheck();
   }
     
   public String codeGeneration() {
 	    String declCode="";
 	    for (Node dec:declist){declCode+=dec.codeGeneration();};
-	    if(classNode != null)
+	    String classCode = "";
+	    for (Node cl:classNode){classCode+=cl.codeGeneration();};
 		return "push 0\n"+
-			   classNode.codeGeneration()+
+			   classCode+
 			   declCode+
 			   exp.codeGeneration()+"halt\n"+ FOOLlib.getCode();
-	    return "push 0\n"+
-		   declCode+
-		   exp.codeGeneration()+"halt\n"+ FOOLlib.getCode();
   }
 }  
