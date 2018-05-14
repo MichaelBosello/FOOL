@@ -82,6 +82,7 @@ public class FOOLlib {
   
   public static void mapSuperType(String className, String superName) {
 	  superType.put(className, superName);
+	  System.out.println(className + " " + superName);
   }
 
 }

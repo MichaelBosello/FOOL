@@ -20,10 +20,16 @@ public class ClassTypeNode implements Node {
   }
   
   public void addField(Node element, int index) {
-	  allFields.add(index, element);
+	  if(index >= allFields.size())
+		  allFields.add(index, element);
+	  else
+		  allFields.set(index, element);
   }
   public void addMethod(Node element, int index) {
-	  allMethods.add(index, element);
+	  if(index >= allMethods.size())
+		  allMethods.add(index, element);
+	  else
+		  allMethods.set(index, element);
   }
 
   public ArrayList<Node> getFields () { 

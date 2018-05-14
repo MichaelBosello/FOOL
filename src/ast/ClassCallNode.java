@@ -44,7 +44,7 @@ public class ClassCallNode implements Node {
 		for (int i=0; i<parlist.size(); i++) 
 			if ( !(FOOLlib.isSubtype( (parlist.get(i)).typeCheck(), p.get(i)) ) ) {
 				System.out.println("Wrong type for "+(i+1)+"-th parameter in the invocation of "+id+ 
-						" expected: " + p.get(i).getClass() + " passed: " + (parlist.get(i)).typeCheck().getClass() );
+						" expected: " + p.get(i).toPrint("") + " passed: " + (parlist.get(i)).typeCheck().toPrint("") );
 				if(p.get(i) instanceof ArrowTypeNode && parlist.get(i).typeCheck() instanceof ArrowTypeNode) {
 					ArrowTypeNode aHO = (ArrowTypeNode) p.get(i);
 					ArrowTypeNode bHO = (ArrowTypeNode) parlist.get(i).typeCheck();

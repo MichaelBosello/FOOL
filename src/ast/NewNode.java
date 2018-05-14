@@ -35,7 +35,7 @@ public class NewNode implements Node {
 		}
 		ArrayList<Node> p = t.getFields();
 		if ( !(p.size() == parlist.size()) ) {
-			System.out.println("Wrong number of parameters for istance of "+id);
+			System.out.println("Wrong number of parameters for istance of "+id + " expected " + p.size() );
 			System.exit(0);
 		} 
 		for (int i=0; i<parlist.size(); i++) 

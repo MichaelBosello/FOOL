@@ -51,7 +51,7 @@ public class ClassNode implements DecNode {
 		  ClassTypeNode superType = (ClassTypeNode) superEntry.getType();
 		  for(int i = 0; i < superType.getFields().size(); i++) {
 			  if(!FOOLlib.isSubtype(superType.getFields().get(i), type.getFields().get(i))) {
-				  System.out.println("Incompatible value in override");
+				  System.out.println("Incompatible field override super: " + superType.getFields().get(i).toPrint("") + " sub: " + type.getFields().get(i).toPrint(""));
 				  System.exit(0);
 			  }
 		  }

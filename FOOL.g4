@@ -84,24 +84,27 @@ cllist returns [ArrayList<DecNode> astlist]
   		   		{ 
                   FieldNode fpar = new FieldNode($pid.text,$pt.ast); 
                   cl.addField(fpar);
-                  if ( virtualTable.put($pid.text,new STentry(nestingLevel,$pt.ast,fieldOffset--)) != null  ) 
+                  if(virtualTable.get($pid.text) == null)
+                  	virtualTable.put($pid.text,new STentry(nestingLevel,$pt.ast,fieldOffset--));
+                  else
                   {
-                  	fieldOffset++;
                   	virtualTable.get($pid.text).addType($pt.ast);
-                  } else
+                  	virtualTable.get($pid.text).setNestinglevel(nestingLevel);
+                  }
                   ctype.addField($pt.ast, (-virtualTable.get($pid.text).getOffset()) - 1);
                 }
   		   	(COMMA pid=ID COLON pt=type
   		   		{ 
                   FieldNode fcpar = new FieldNode($pid.text,$pt.ast); 
                   cl.addField(fcpar);
-                  if ( virtualTable.put($pid.text,new STentry(nestingLevel,$pt.ast,fieldOffset--)) != null  ) 
+                  if(virtualTable.get($pid.text) == null)
+                  	virtualTable.put($pid.text,new STentry(nestingLevel,$pt.ast,fieldOffset--));
+                  else
                   {
-                  	fieldOffset++;
                   	virtualTable.get($pid.text).addType($pt.ast);
-                  } else
+                  	virtualTable.get($pid.text).setNestinglevel(nestingLevel);
+                  }
                   ctype.addField($pt.ast, (-virtualTable.get($pid.text).getOffset()) - 1);
-                  
                 }
   		   	)*
   		   )? 
@@ -112,15 +115,19 @@ cllist returns [ArrayList<DecNode> astlist]
 	              {
 	               MethodNode f = new MethodNode($i.text,$t.ast);      
 	               cl.addMethod(f);
-	               STentry entry=new STentry(nestingLevel,methodOffset++,true);
-	               if ( virtualTable.put($i.text,entry) != null  )
+	               STentry entry=new STentry(nestingLevel, methodOffset++, true);
+	               if(virtualTable.get($i.text) == null)
+	               	 virtualTable.put($i.text,entry);
+	               else
 	               {
 	               	 methodOffset--;
-                  	 virtualTable.get($i.text).addType($t.ast);
-                  	 f.setOffset(virtualTable.get($i.text).getOffset());
-                   } else {
+                  	 entry.setOffset(virtualTable.get($i.text).getOffset());
+                  	 virtualTable.replace($i.text,entry);
+                   }
                    f.setOffset(virtualTable.get($i.text).getOffset());
-                   ctype.addMethod($t.ast, virtualTable.get($i.text).getOffset());}
+                   	ctype.addMethod($t.ast, virtualTable.get($i.text).getOffset());
+                   
+                   
 	                //creare una nuova hashmap per la symTable
 	                nestingLevel++;
 	                HashMap<String,STentry> hmn = new HashMap<String,STentry> ();

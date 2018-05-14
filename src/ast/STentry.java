@@ -45,9 +45,17 @@ public class STentry {
 	  return type;
   }
   
+  public void setOffset(int o) {
+	  offset = o;
+  }
+  
   public int getOffset() {
 	  return offset;
   }
+  
+  public void setNestinglevel(int n) {
+	  nl=n;
+  } 
   
   public int getNestinglevel() {
 	  return nl;
