@@ -36,7 +36,7 @@ public MethodNode (String i, Node t) {
 		 for (Node par:parlist){parlstr+=par.toPrint(s+"  ");};
 		 String declstr="";
 		 for (Node dec:declist){declstr+=dec.toPrint(s+"  ");};
-	   return s+"Fun:" + id +"\n"
+	   return s+"Fun:" + id +" offset: " + offset + "\n"
 			   +type.toPrint(s+"  ")
 			   +parlstr
 			   +declstr

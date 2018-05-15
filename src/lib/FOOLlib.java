@@ -56,6 +56,62 @@ public class FOOLlib {
 	  return false;
   }
   
+  public static Node lowestCommonAncestor(Node a, Node b) {
+	  if(a instanceof BoolTypeNode) {
+		  if(b instanceof BoolTypeNode || b instanceof IntTypeNode) {
+			  return b;
+		  }
+	  }
+	  if(a instanceof IntTypeNode) {
+		  if(b instanceof BoolTypeNode || b instanceof IntTypeNode) {
+			  return new IntTypeNode();
+		  }
+	  }
+	  
+	  if(a instanceof EmptyTypeNode) {
+		  return b;
+	  }
+	  if(b instanceof EmptyTypeNode) {
+		  return a;
+	  }
+	  
+	  if(a instanceof RefTypeNode && b instanceof RefTypeNode) {
+		  RefTypeNode aRef = (RefTypeNode) a;
+		  RefTypeNode bRef = (RefTypeNode) b;
+		  if(isSubtype(bRef, aRef))
+			  return new RefTypeNode(aRef.getId());
+		  String sub = superType.get(aRef.getId());
+		  while(sub != null) {
+			  if(isSubtype(bRef, new RefTypeNode(sub)))
+				  return new RefTypeNode(sub);
+			  sub = superType.get(sub);
+		  }
+	  }
+	  
+	  if(a instanceof ArrowTypeNode && b instanceof ArrowTypeNode) {
+		  ArrowTypeNode aHO = (ArrowTypeNode) a;
+		  ArrowTypeNode bHO = (ArrowTypeNode) b;
+		  //covarianza del tipo di ritorno e controvarianza dei parametri
+		  if(aHO.getParList().size() == bHO.getParList().size()) {
+			  Node ret = lowestCommonAncestor(aHO.getRet(), bHO.getRet());
+			  if(ret != null) {
+				  ArrayList<Node> par = new ArrayList<>();
+				  for(int index = 0; index < aHO.getParList().size(); index++) {
+					  if(isSubtype(aHO.getParList().get(index), bHO.getParList().get(index)))
+						  par.add(aHO.getParList().get(index));
+					  else if(isSubtype(bHO.getParList().get(index), aHO.getParList().get(index)))
+						  par.add(bHO.getParList().get(index));
+					  else
+						  return null;
+				  }
+				  return new ArrowTypeNode(par, ret);
+			  }
+		  }
+	  }
+	  
+	  return null;
+  }
+  
   public static String freshLabel() {
 	  return "label"+(labCount++);
   }

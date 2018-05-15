@@ -46,10 +46,32 @@ public class ClassNode implements DecNode {
   
   public Node typeCheck() {
 	  for (Node met:methods){met.typeCheck();};
-	  ClassTypeNode type = (ClassTypeNode) symType;
+	  
 	  if(superEntry != null) {
+		  ClassTypeNode type = (ClassTypeNode) symType;
 		  ClassTypeNode superType = (ClassTypeNode) superEntry.getType();
-		  for(int i = 0; i < superType.getFields().size(); i++) {
+		  
+		  for(int i = 0; i < fields.size(); i++) {
+			  FieldNode f = (FieldNode) fields.get(i);
+			  int pos = -f.getOffset() -1;
+			  if(pos < superType.getFields().size())
+			  if(!FOOLlib.isSubtype(type.getFields().get(pos), superType.getFields().get(pos))) {
+				  System.out.println("Incompatible field override super: " + superType.getFields().get(pos).toPrint("") + " sub: " + type.getFields().get(i).toPrint(""));
+				  System.exit(0);
+			  }
+		  }
+		  
+		  for(int i = 0; i < methods.size(); i++) {
+			  MethodNode m = (MethodNode) methods.get(i);
+			  int pos = m.getOffset();
+			  if(pos < superType.getMethods().size())
+			  if(!FOOLlib.isSubtype(type.getMethods().get(pos), superType.getMethods().get(pos))) {
+				  System.out.println("Incompatible method override super: " + superType.getMethods().get(pos).toPrint("") + " sub: " + type.getMethods().get(i).toPrint(""));
+				  System.exit(0);
+			  }
+		  }
+		  
+		  /*for(int i = 0; i < superType.getFields().size(); i++) {
 			  if(!FOOLlib.isSubtype(type.getFields().get(i), superType.getFields().get(i))) {
 				  System.out.println("Incompatible field override super: " + superType.getFields().get(i).toPrint("") + " sub: " + type.getFields().get(i).toPrint(""));
 				  System.exit(0);
@@ -60,7 +82,7 @@ public class ClassNode implements DecNode {
 				  System.out.println("Incompatible method override");
 				  System.exit(0);
 			  }
-		  }
+		  }*/
 	  }
 	  
 	  return null;

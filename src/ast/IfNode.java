@@ -27,10 +27,9 @@ public class IfNode implements Node {
 	}
 	Node t= th.typeCheck();  
 	Node e= el.typeCheck();  
-	if (FOOLlib.isSubtype(t, e))
-      return e;
-	if (FOOLlib.isSubtype(e, t))
-	  return t;
+	Node commonAncestor = FOOLlib.lowestCommonAncestor(t, e);
+	if (commonAncestor != null)
+      return commonAncestor;
 	System.out.println("Incompatible types in then-else branches");
     System.exit(0);
     return null;

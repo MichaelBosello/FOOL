@@ -4,7 +4,7 @@ import lib.*;
 
 public class ProgLetInNode implements Node {
 
-  private ArrayList<DecNode> declist;
+  private ArrayList<DecNode> declist = new ArrayList<DecNode>();
   private ArrayList<DecNode> classNode = new ArrayList<DecNode>();
   private Node exp;
   

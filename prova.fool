@@ -1,8 +1,51 @@
 let 
+
+  class Account (money:int) {
+    fun getMon:int () money;
+  }
+  
+  class TradingAcc extends Account (invested:int) {
+    fun getInv:int () invested;
+  }
+  
+  class BankLoan (loan: Account) {
+    fun getLoan:Account () loan;
+    fun openLoan:Account (m:TradingAcc) if ((m.getMon()+m.getInv())>=30000) 
+      then {new Account(loan.getMon())} 
+      else {null};
+  } 
+  
+  class MyBankLoan extends BankLoan (loan: TradingAcc) {
+    fun openLoan:TradingAcc (l:Account) if (l.getMon()>=20000) 
+      then {new TradingAcc(loan.getMon(),loan.getInv())} 
+      else {null};
+  } 
+
+  var bls:BankLoan = new BankLoan(new TradingAcc(50000,40000));
+  var bl:BankLoan = new MyBankLoan(new TradingAcc(50000,40000));
+  var myTradingAcc:TradingAcc = new TradingAcc(20000,5000);
+  var myLoan:Account = bl.openLoan(myTradingAcc);
   var x:int = 1;
   var b:bool = true;
+  
+  fun linsum1:int(a:int,b:int)
+        (a+b);
+  var f1:(int,int)->int = linsum1;
+  
+  fun linsum2:bool(a:int,b:int)
+        false;
+  var f2:(int,bool)->bool = linsum2;
+  
+  fun acc1:Account()
+        myLoan;
+  var fl1:()->Account = acc1;
+  
+  fun acc2:TradingAcc()
+        myTradingAcc;
+  var fl2:()->Account = acc2;
+  
 in
-  print (if (b) then { x+1 } else { x+2 });
+  print (if (b) then { fl1 } else { fl2 });
 
 /* SERBATOIO ESEMPI
 let

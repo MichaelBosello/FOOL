@@ -3,6 +3,7 @@ grammar FOOL;
 @header{
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import ast.*;
 import lib.FOOLlib;
 }
@@ -46,6 +47,7 @@ cllist returns [ArrayList<DecNode> astlist]
   					ClassTypeNode ctype = new ClassTypeNode();
   					cl.setSymType(ctype);
   					HashMap<String,STentry> virtualTable = new HashMap<String,STentry> ();
+  					HashSet<String> declaration = new HashSet<>();
   				 }
   		(EXTENDS p=ID {
   			   //cercare la dichiarazione
@@ -84,6 +86,12 @@ cllist returns [ArrayList<DecNode> astlist]
   		   		{ 
                   FieldNode fpar = new FieldNode($pid.text,$pt.ast); 
                   cl.addField(fpar);
+                  
+                  if(declaration.contains($pid.text))
+                  {System.out.println("Field id "+$pid.text+" at line "+$pid.line+" already declared");
+                   System.exit(0);}
+                  declaration.add($pid.text);
+                  
                   if(virtualTable.get($pid.text) == null)
                   	virtualTable.put($pid.text,new STentry(nestingLevel,$pt.ast,fieldOffset--));
                   else
@@ -91,12 +99,19 @@ cllist returns [ArrayList<DecNode> astlist]
                   	virtualTable.get($pid.text).addType($pt.ast);
                   	virtualTable.get($pid.text).setNestinglevel(nestingLevel);
                   }
-                  ctype.addField($pt.ast, (-virtualTable.get($pid.text).getOffset()) - 1);
+                  ctype.addField($pt.ast, (-virtualTable.get($pid.text).getOffset()) - 1);                  
+                  fpar.setOffset(virtualTable.get($pid.text).getOffset());
                 }
   		   	(COMMA pid=ID COLON pt=type
   		   		{ 
                   FieldNode fcpar = new FieldNode($pid.text,$pt.ast); 
                   cl.addField(fcpar);
+                  
+                  if(declaration.contains($pid.text))
+                  {System.out.println("Field id "+$pid.text+" at line "+$pid.line+" already declared");
+                   System.exit(0);}
+                  declaration.add($pid.text);
+                  
                   if(virtualTable.get($pid.text) == null)
                   	virtualTable.put($pid.text,new STentry(nestingLevel,$pt.ast,fieldOffset--));
                   else
@@ -104,7 +119,8 @@ cllist returns [ArrayList<DecNode> astlist]
                   	virtualTable.get($pid.text).addType($pt.ast);
                   	virtualTable.get($pid.text).setNestinglevel(nestingLevel);
                   }
-                  ctype.addField($pt.ast, (-virtualTable.get($pid.text).getOffset()) - 1);
+                  ctype.addField($pt.ast, (-virtualTable.get($pid.text).getOffset()) - 1);                  
+                  fcpar.setOffset(virtualTable.get($pid.text).getOffset());
                 }
   		   	)*
   		   )? 
@@ -115,6 +131,12 @@ cllist returns [ArrayList<DecNode> astlist]
 	              {
 	               MethodNode f = new MethodNode($i.text,$t.ast);      
 	               cl.addMethod(f);
+	               
+	               if(declaration.contains($i.text))
+                  {System.out.println("Method id "+$i.text+" at line "+$i.line+" already declared");
+                   System.exit(0);}
+                  declaration.add($i.text);
+	               
 	               STentry entry=new STentry(nestingLevel, methodOffset++, true);
 	               if(virtualTable.get($i.text) == null)
 	               	 virtualTable.put($i.text,entry);
@@ -385,7 +407,9 @@ value	returns [Node ast]
 		   	 )? 
 		   	 RPAR
 		   	 {
-		   	 	//cercare la dichiarazione del metodo
+		   	 	if(!(entry.getType() instanceof RefTypeNode))
+		   	 	{System.out.println("Id "+ $i.text +" at line "+$i.line+" is not a object reference");
+	              System.exit(0);}  
 		   	   RefTypeNode rtype = (RefTypeNode) entry.getType();
 		   	   HashMap<String,STentry> cr = classTable.get(rtype.getId());
 		   	   if (cr==null)
